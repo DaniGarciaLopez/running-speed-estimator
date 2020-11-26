@@ -84,6 +84,11 @@ sudo apt install caffe-cuda
 sudo apt-get install libopencv-dev
 $ pkg-config --modversion opencv   ## current latest version is 3.2
 ```
+> Run the following command if and only if there is "cv2" not found error when running python example:
+```
+pip3 install opencv-python==3.2.0.8
+
+```
 ### Build OpenPose
 ```
 cd openpose/3rdparty
