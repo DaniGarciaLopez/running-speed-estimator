@@ -1,14 +1,24 @@
 # Estimate the running speed of a human from a video stream
+## How to start
+Install OpenPose library and clone this repository:
+```
+git clone https://github.com/DaniGarciaLopez/running-speed-estimator/
+```
+Run the main script with Python 3:
+```
+cd running-speed-estimator
+python3 main.py
+```
 ## Installation
 > The following steps were perform to sucessfully install OpenPose 1.7 in a fresh Ubuntu 18.04 system. In order to install it in a different environment you may need another configuration. Please refer to the [official installation instructions](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/README.md) to proceed.
 ### Prerequisites
 #### Install Cuda 10.0 and CuDNN 7
-Purge existing CUDA first
+Purge existing CUDA first:
 ```
 sudo apt --purge remove "cublas*" "cuda*"
 sudo apt --purge remove "nvidia*"
 ```
-Install CUDA Toolkit 10
+Install CUDA Toolkit 10:
 ```
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-repo-ubuntu1804_10.0.130-1_amd64.deb
 sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub && sudo apt update
@@ -17,7 +27,7 @@ sudo dpkg -i cuda-repo-ubuntu1804_10.0.130-1_amd64.deb
 sudo apt update
 sudo apt install -y cuda=10.0.130-1
 ```
-Install CuDNN 7 and NCCL 2
+Install CuDNN 7 and NCCL 2:
 ```
 wget https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/nvidia-machine-learning-repo-ubuntu1804_1.0.0-1_amd64.deb
 sudo dpkg -i nvidia-machine-learning-repo-ubuntu1804_1.0.0-1_amd64.deb
