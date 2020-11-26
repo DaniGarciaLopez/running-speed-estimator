@@ -44,7 +44,7 @@ Reboot computer
 ```
 reboot
 ```
-#### Clone repository
+#### Clone OpenPose repository
 ```
 cd
 git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose
