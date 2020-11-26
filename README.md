@@ -1,6 +1,6 @@
 # Estimate the running speed of a human from a video stream
 ## Installation
-> The following steps were perform to sucessfully install OpenPose library in a fresh Ubuntu 18.04 system. In order to install it in a different environment you may need another configuration. Please refer to the [official installation instructions](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/README.md) to proceed.
+> The following steps were perform to sucessfully install OpenPose 1.7 in a fresh Ubuntu 18.04 system. In order to install it in a different environment you may need another configuration. Please refer to the [official installation instructions](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/README.md) to proceed.
 ### Prerequisites
 #### Install Cuda 10.0 and CuDNN 7
 Purge existing CUDA first
