@@ -118,6 +118,11 @@ make -j`nproc`
 cd openpose
 ./build/examples/openpose/openpose.bin --video examples/media/video.avi
 ```
+#### Test Python API
+```
+cd openpose/build/examples/tutorial_api_python
+python3 openpose_python.py
+```
 ![image](https://github.com/tramper2/openpose/blob/master/doc/media/shake.gif)
 ### References
 - [OpenPose Installation](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/README.md)
