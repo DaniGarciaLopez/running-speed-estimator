@@ -109,7 +109,7 @@ cmake-gui
 4) It takes some time to download models and compiling it. If any error happens it may be of CUDA or cuDNN installation. After successful configuration, check the “BUILD_PYTHON” inside the red box.
 ![image](https://github.com/DaniGarciaLopez/running-speed-estimator/blob/main/cmake.png?raw=true)
 5) Click "Generate". It will show "Generating done" if no errors.
-6) Close the CMake and proceed with these commands in your terminal to build openpose:
+6) Close the CMake and proceed with these commands in your terminal to build OpenPose:
 ```
 cd openpose/build/
 make -j`nproc`
