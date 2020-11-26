@@ -44,6 +44,11 @@ Reboot computer
 ```
 reboot
 ```
+#### Clone repository
+```
+cd
+git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose
+```
 #### Uninstall Anaconda (if any)
 > Anaconda includes a Protobuf version that is incompatible with Caffe. Either you uninstall anaconda and install protobuf via apt-get, or you compile your own Caffe and link it to OpenPose.
 ```
