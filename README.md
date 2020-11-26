@@ -106,7 +106,7 @@ cmake-gui
 2) Select Openpose source code directory path and build directory path.
 3) Select Configure to compile the files. A dialog box appears CMakeSetup. Select "Unix Makefiles" and "Use default native compilers". Click finish.
 4) It takes some time to download models and compiling it. If any error happens it may be of CUDA or cuDNN installation. After successful configuration, check the “BUILD_PYTHON” inside the red box.
-![image](https://miro.medium.com/max/878/0*zMyfPTYozlxAS1Qf.png)
+![image](https://github.com/DaniGarciaLopez/running-speed-estimator/blob/main/cmake.png?raw=true)
 5) Click "Generate". It will show "Generating done" if no errors.
 6) Close the CMake and proceed with these commands in your terminal to build openpose:
 ```
