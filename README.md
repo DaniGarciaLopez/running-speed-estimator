@@ -114,6 +114,16 @@ cmake-gui
 cd openpose/build/
 make -j`nproc`
 ```
+Compile OpenPose source:
+```
+cd openpose/build/
+sudo make install
+```
+Compile and build python OpenPose:
+```
+cd openpose/build/python/openpose
+sudo make install
+```
 ### Test OpenPose
 ```
 cd openpose
