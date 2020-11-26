@@ -1,14 +1,4 @@
 # Estimate the running speed of a human from a video stream
-## How to start
-Install OpenPose library and clone this repository:
-```
-git clone https://github.com/DaniGarciaLopez/running-speed-estimator/
-```
-Run the main script with Python 3:
-```
-cd running-speed-estimator
-python3 main.py
-```
 ## Installation
 > The following steps were perform to sucessfully install OpenPose 1.7 in a fresh Ubuntu 18.04 system. In order to install it in a different environment you may need another configuration. Please refer to the [official installation instructions](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/README.md) to proceed.
 ### Prerequisites
@@ -150,7 +140,18 @@ cd openpose/build/examples/tutorial_api_python
 python3 openpose_python.py
 ```
 ![image](https://github.com/tramper2/openpose/blob/master/doc/media/shake.gif)
-### References
+
+# How to start
+After installing OpenPose library, clone this repository:
+```
+git clone https://github.com/DaniGarciaLopez/running-speed-estimator/
+```
+Run the main script with Python 3:
+```
+cd running-speed-estimator
+python3 main.py
+```
+## References
 - [OpenPose Installation](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/README.md)
 - [A 2020 Guide for Installing OpenPose](https://medium.com/@erica.z.zheng/installing-openpose-on-ubuntu-18-04-cuda-10-ebb371cf3442)
 - [Python OpenPose Installation](https://robinreni96.github.io/computervision/Python-Openpose-Installation/)
