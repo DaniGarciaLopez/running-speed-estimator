@@ -45,6 +45,7 @@ Reboot computer
 reboot
 ```
 #### Uninstall Anaconda (if any)
+> Anaconda includes a Protobuf version that is incompatible with Caffe. Either you uninstall anaconda and install protobuf via apt-get, or you compile your own Caffe and link it to OpenPose.
 ```
 rm -rf anaconda3/
 ```
