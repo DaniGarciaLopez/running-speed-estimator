@@ -146,6 +146,10 @@ After installing OpenPose library, clone this repository:
 ```
 git clone https://github.com/DaniGarciaLopez/running-speed-estimator/
 ```
+Copy models folder:
+```
+cp -r openpose/models running-speed-estimator/models
+```
 Run the main script with Python 3:
 ```
 cd running-speed-estimator
