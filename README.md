@@ -153,7 +153,7 @@ cp -r openpose/models running-speed-estimator/models
 Run the main script with Python 3:
 ```
 cd running-speed-estimator
-python3 main.py
+python3 main.py --tracking --number_people_max 1 --write_json --video runner.mp4
 ```
 ## References
 - [OpenPose Installation](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/README.md)
