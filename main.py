@@ -5,6 +5,12 @@ import cv2
 import os
 from sys import platform
 import argparse
+import time
+
+import os, json
+import pandas as pd
+import shutil
+import matplotlib.pyplot as plt
 
 try:
     # Import Openpose (Windows/Ubuntu/OSX)
@@ -27,8 +33,10 @@ try:
         raise e
 
     # Flags
+    path_to_video='runner.mp4'
     parser = argparse.ArgumentParser()
-    parser.add_argument("--image_path", default="openpose/examples/media/COCO_val2014_000000000192.jpg", help="Process an image. Read all standard formats (jpg, png, bmp, etc.).")
+    #parser.add_argument('--input', type=str, default='video')
+    #parser.add_argument('--video', type=str, default=path_to_video)
     args = parser.parse_known_args()
 
     # Custom Params (refer to include/openpose/flags.hpp for more parameters)
@@ -55,6 +63,37 @@ try:
     opWrapper = op.WrapperPython(op.ThreadManagerMode.Synchronous)
     opWrapper.configure(params)
     opWrapper.execute()
+
+    poses=[]
+    keypoints=[]
+    # Get all json filenames from dir
+    path_to_json = '1/'
+    json_files = [pos_json for pos_json in os.listdir(path_to_json) if pos_json.endswith('.json')]
+    
+    for json_filename in json_files: #Iterate with all json filenames
+        path=os.path.join(path_to_json, json_filename) #Create path to json file
+        with open(path) as jsonFile: #Open json file
+            jsonObject = json.load(jsonFile) #Create json object
+            poses.append(jsonObject) #Append json object in poses
+            jsonFile.close()
+
+    shutil.rmtree(path_to_json) #Remove json folder
+
+    #Extract keypoints
+    for pose in poses:
+        keypoints.append(pose.get('people')[0].get('pose_keypoints_2d')) #Extract keypoints from skeleton and save it in keypoints array. Only works if number_people_max=1
+    # Body part locations (x, y) and detection confidence (c) formatted as x0,y0,c0,x1,y1,c1,.... 
+
+    print(keypoints[0])
+    print(len(keypoints[0]))
+
+
+    
+    # plt.plot(velocities)
+    # plt.ylabel('speed')
+    # plt.show()
+
+    
 except Exception as e:
     print(e)
     sys.exit(-1)
