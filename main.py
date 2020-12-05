@@ -28,17 +28,19 @@ right_knee=10
 left_ankle=14
 right_ankle=11
 
+#get angle between three points
 def getAngle(a, b, c):
     ang = math.degrees(math.atan2(c[1]-b[1], c[0]-b[0]) - math.atan2(a[1]-b[1], a[0]-b[0]))
     return ang
 
+#function that determines how many pixels correlate to 1 meter, using the height of the athlete
 def get_pixels_per_meter(kp):   #returns how many pixels correlate to 1 meter in the frame
     coord_eyes = (kp[eyes][0], kp[eyes][1])
     coord_neck = (kp[neck][0], kp[neck][1])
     coord_hip = (kp[hip][0], kp[hip][1])
     coord_knee = (kp[left_knee][0], kp[left_knee][1])
     coord_ankle = (kp[left_ankle][0], kp[left_ankle][1])
-    distance = 0        #we add the distance between keypoints 16 1 8 13 14
+    distance = 0        #we add the distances between eyes, neck, hip, knee and ankle
     distance += math.dist(coord_eyes,coord_neck)
     distance += math.dist(coord_neck, coord_hip)
     distance += math.dist(coord_hip, coord_knee)
@@ -47,6 +49,7 @@ def get_pixels_per_meter(kp):   #returns how many pixels correlate to 1 meter in
     pixels = int(distance/athlete_height*100)
     return pixels
 
+#function to draw a measurement line on the floor using the athlete's height
 def draw_meter_lines(frame, kp):
     values = []
     ppm = get_pixels_per_meter(kp)
@@ -62,6 +65,7 @@ def draw_meter_lines(frame, kp):
                     2)
     return frame
 
+#function to draw circles at the keypoints
 def draw_keypoints(frame, kp):  #kp must be in 25*3 format
     kpid = 0
     for point in kp:  # drawing a circle for each kp
@@ -78,6 +82,18 @@ def draw_keypoints(frame, kp):  #kp must be in 25*3 format
         kpid += 1
     return frame
 
+#function to draw the athlete speed at the bottom left of the screen
+def draw_athlete_speed(speed):
+    cv2.putText(frame,
+                str(round(speed, 2)) + ' Km/h',
+                bottom_left_of_screen,
+                cv2.FONT_HERSHEY_SIMPLEX,
+                2,
+                (255, 255, 255),
+                2)
+    return frame
+
+
 #main
 while(1):
     cap = cv2.VideoCapture('makau.mp4')
@@ -92,42 +108,36 @@ while(1):
 
         frame = draw_keypoints(frame, kp)
 
-        hip_coord = (kp[hip][0], kp[hip][1])
-        left_ankle_coord = (kp[left_ankle][0], kp[left_ankle][1])
-        right_ankle_coord = (kp[right_ankle][0], kp[right_ankle][1])
-        ankle_distance = math.fabs(left_ankle_coord[0]-right_ankle_coord[0])
-        if ankle_distance > prev_ankle_distance-5:
-            stride_frames +=1
-            prev_ankle_distance = ankle_distance
-        else:
-            stride_pixels = ankle_distance
-            stride_meters = stride_pixels/get_pixels_per_meter(kp)
-            stride_time = stride_frames*(1/camera_fps)
-            try:
-                speed = (stride_meters/stride_time)*3.6
-            except ZeroDivisionError:
-                print ("Division by zero")
-            stride_frames=0
-            prev_ankle_distance = ankle_distance
-            print("The stride has " + str(stride_meters) + " meters")
-            print("The stride spent " + str(stride_time) + " seconds")
-            print("The speed is " + str(speed) + " kilometers per hour")
+        # aqui iria el algoritmo de deteccion de velocidad, esto que he comentado ha sido un intento de hacerlo con la distancia entre tobillos
 
+        # hip_coord = (kp[hip][0], kp[hip][1])
+        # left_ankle_coord = (kp[left_ankle][0], kp[left_ankle][1])
+        # right_ankle_coord = (kp[right_ankle][0], kp[right_ankle][1])
+        # ankle_distance = math.fabs(left_ankle_coord[0]-right_ankle_coord[0])
+        # if ankle_distance > prev_ankle_distance-5:
+        #     stride_frames +=1
+        #     prev_ankle_distance = ankle_distance
+        # else:
+        #     stride_pixels = ankle_distance
+        #     stride_meters = stride_pixels/get_pixels_per_meter(kp)
+        #     stride_time = stride_frames*(1/camera_fps)
+        #     try:
+        #         speed = (stride_meters/stride_time)*3.6
+        #     except ZeroDivisionError:
+        #         print ("Division by zero")
+        #     stride_frames=0
+        #     prev_ankle_distance = ankle_distance
+        #     print("The stride travelled " + str(stride_meters) + " meters")
+        #     print("The stride took " + str(stride_time) + " seconds")
+        #     print("The speed is " + str(speed) + " kilometers per hour")
 
-        cv2.putText(frame,
-                    str(round(speed,2))+' Km/h',
-                    bottom_left_of_screen,
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    2,
-                    (255,255,255),
-                    2)
-
+        frame = draw_athlete_speed(speed)
 
         cv2.imshow('frame', frame)
+        total_frame_count += 1
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             exit()
-        total_frame_count += 1
 
 cap.release()
 cv2.destroyAllWindows()
