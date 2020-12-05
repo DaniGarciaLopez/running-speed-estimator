@@ -1,3 +1,4 @@
+#must have OpenCv, numpy and matplot lib installed for python
 import cv2
 import import_json as ij
 import numpy as np
@@ -8,9 +9,10 @@ from matplotlib import pyplot as plt
 athlete_height = 180 # in cm
 camera_fps = 60
 
-#importing json file
-keypoints = ij.get_keypoints()
-kp = []
+#importing json file data
+kp = ij.get_keypoints()     #kp is a list of all the 25x3 lists of keypoints
+#kp = ij.interpolate_uncertain_points(kp)       #uncomment to interpolate uncertain points
+f_kp = []       #f_kp will be a 25x3 list of the keypoints at a specific frame
 
 #init
 speed = 0
@@ -34,12 +36,12 @@ def getAngle(a, b, c):
     return ang
 
 #function that determines how many pixels correlate to 1 meter, using the height of the athlete
-def get_pixels_per_meter(kp):   #returns how many pixels correlate to 1 meter in the frame
-    coord_eyes = (kp[eyes][0], kp[eyes][1])
-    coord_neck = (kp[neck][0], kp[neck][1])
-    coord_hip = (kp[hip][0], kp[hip][1])
-    coord_knee = (kp[left_knee][0], kp[left_knee][1])
-    coord_ankle = (kp[left_ankle][0], kp[left_ankle][1])
+def get_pixels_per_meter(f_kp):   #returns how many pixels correlate to 1 meter in the frame
+    coord_eyes = (f_kp[eyes][0], f_kp[eyes][1])
+    coord_neck = (f_kp[neck][0], f_kp[neck][1])
+    coord_hip = (f_kp[hip][0], f_kp[hip][1])
+    coord_knee = (f_kp[left_knee][0], f_kp[left_knee][1])
+    coord_ankle = (f_kp[left_ankle][0], f_kp[left_ankle][1])
     distance = 0        #we add the distances between eyes, neck, hip, knee and ankle
     distance += math.dist(coord_eyes,coord_neck)
     distance += math.dist(coord_neck, coord_hip)
@@ -49,11 +51,11 @@ def get_pixels_per_meter(kp):   #returns how many pixels correlate to 1 meter in
     pixels = int(distance/athlete_height*100)
     return pixels
 
-#function to draw a measurement line on the floor using the athlete's height
-def draw_meter_lines(frame, kp):
+#function to draw a meter measurement line on the floor using the athlete's height at a specific frame
+def draw_meter_lines(frame, f_kp):
     values = []
-    ppm = get_pixels_per_meter(kp)
-    for keypoint in kp:      #we get just the y values
+    ppm = get_pixels_per_meter(f_kp)
+    for keypoint in f_kp:      #we get just the y values
         values.append(keypoint[1])
     max_value = int(max(values))    #we draw the line at the lowest keypoint (approx the floor)
     frame = cv2.line(frame, (0, max_value), (1280, max_value), (255, 255, 255), 2)
@@ -65,10 +67,10 @@ def draw_meter_lines(frame, kp):
                     2)
     return frame
 
-#function to draw circles at the keypoints
-def draw_keypoints(frame, kp):  #kp must be in 25*3 format
+#function to draw circles at the keypoints of a specific frame
+def draw_keypoints(frame, f_kp):
     kpid = 0
-    for point in kp:  # drawing a circle for each kp
+    for point in f_kp:  # drawing a circle for each kp
         center = (int(point[0]), int(point[1]))
         center_high = ((int(point[0])-5, int(point[1])-15))      #used for writing its id
         frame = cv2.circle(frame, center, 10, (0, int(255 * point[2]), 255 * (1 - point[2])), 3)       #draws green cirle if certain, red if not
@@ -82,8 +84,8 @@ def draw_keypoints(frame, kp):  #kp must be in 25*3 format
         kpid += 1
     return frame
 
-#function to draw the athlete speed at the bottom left of the screen
-def draw_athlete_speed(speed):
+#function to draw the athlete speed at the bottom left of the screen of a frame
+def draw_athlete_speed(frame, speed):
     cv2.putText(frame,
                 str(round(speed, 2)) + ' Km/h',
                 bottom_left_of_screen,
@@ -97,16 +99,16 @@ def draw_athlete_speed(speed):
 #main
 while(1):
     cap = cv2.VideoCapture('makau.mp4')
-    total_frame_count = 0
+    frame_count = 0
 
     while(cap.isOpened()):
         ret, frame = cap.read()
         if not ret:
             break
 
-        kp = keypoints[total_frame_count]
+        f_kp = kp[frame_count]
 
-        frame = draw_keypoints(frame, kp)
+        frame = draw_keypoints(frame, f_kp)
 
         # aqui iria el algoritmo de deteccion de velocidad, esto que he comentado ha sido un intento de hacerlo con la distancia entre tobillos
 
@@ -131,10 +133,10 @@ while(1):
         #     print("The stride took " + str(stride_time) + " seconds")
         #     print("The speed is " + str(speed) + " kilometers per hour")
 
-        frame = draw_athlete_speed(speed)
+        frame = draw_athlete_speed(frame, speed)
 
         cv2.imshow('frame', frame)
-        total_frame_count += 1
+        frame_count += 1
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             exit()

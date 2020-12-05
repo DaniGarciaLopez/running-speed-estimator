@@ -2,24 +2,6 @@ import os
 import json
 import numpy as np
 
-def interpolate_uncertain_points(keypoints):
-    kp = []
-
-    #here we convert the 1100*75 array into a 1100*25*3
-    for keypoint in keypoints:
-        temp_kp = np.array(keypoint).reshape(25, 3)
-        kp.append(temp_kp)
-
-    #here were change the uncertain x and y values for the average of the previous and next point
-    for frame in range (1,len(kp)-1):
-        for kp_id in range (len(kp[frame])):
-            if kp[frame][kp_id][2]<0.6:
-                kp[frame][kp_id][0] = (kp[frame-1][kp_id][0]+kp[frame+1][kp_id][0])/2
-                kp[frame][kp_id][1] = (kp[frame - 1][kp_id][1] + kp[frame + 1][kp_id][1]) / 2
-                kp[frame][kp_id][2] = 1
-
-    return kp
-
 
 def get_keypoints():
 
@@ -45,4 +27,23 @@ def get_keypoints():
 
     # Body part locations (x, y) and detection confidence (c) formatted as x0,y0,c0,x1,y1,c1,....
 
-    return interpolate_uncertain_points(keypoints)
+    kp = []
+
+    # here we convert the (frames)*75 array into a (frames)*25*3
+    for keypoint in keypoints:
+        temp_kp = np.array(keypoint).reshape(25, 3)
+        kp.append(temp_kp)
+
+    return kp
+
+def interpolate_uncertain_points(kp):
+
+    #here were change the uncertain x and y values for the average of the previous and next point
+    for frame in range (1,len(kp)-1):
+        for kp_id in range (len(kp[frame])):
+            if kp[frame][kp_id][2]<0.6:
+                kp[frame][kp_id][0] = (kp[frame-1][kp_id][0]+kp[frame+1][kp_id][0])/2
+                kp[frame][kp_id][1] = (kp[frame - 1][kp_id][1] + kp[frame + 1][kp_id][1]) / 2
+                kp[frame][kp_id][2] = 1
+
+    return kp
