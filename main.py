@@ -1,99 +1,134 @@
-# From Python
-# It requires OpenCV installed for Python
-import sys
 import cv2
-import os
-from sys import platform
-import argparse
-import time
+import import_json as ij
+import numpy as np
+import math
+from matplotlib import pyplot as plt
 
-import os, json
-import pandas as pd
-import shutil
-import matplotlib.pyplot as plt
+#key data
+athlete_height = 180 # in cm
+camera_fps = 60
 
-try:
-    # Import Openpose (Windows/Ubuntu/OSX)
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    try:
-        # Windows Import
-        if platform == "win32":
-            # Change these variables to point to the correct folder (Release/x64 etc.)
-            sys.path.append(dir_path + '/../../python/openpose/Release');
-            os.environ['PATH']  = os.environ['PATH'] + ';' + dir_path + '/../../x64/Release;' +  dir_path + '/../../bin;'
-            import pyopenpose as op
+#importing json file
+keypoints = ij.get_keypoints()
+kp = []
+
+#init
+speed = 0
+max_distance = 0
+stride_frames = 0
+prev_ankle_distance = 0
+
+#constants
+bottom_left_of_screen = (20, 700)
+eyes=17
+neck=1
+hip=8
+left_knee=13
+right_knee=10
+left_ankle=14
+right_ankle=11
+
+def getAngle(a, b, c):
+    ang = math.degrees(math.atan2(c[1]-b[1], c[0]-b[0]) - math.atan2(a[1]-b[1], a[0]-b[0]))
+    return ang
+
+def get_pixels_per_meter(kp):   #returns how many pixels correlate to 1 meter in the frame
+    coord_eyes = (kp[eyes][0], kp[eyes][1])
+    coord_neck = (kp[neck][0], kp[neck][1])
+    coord_hip = (kp[hip][0], kp[hip][1])
+    coord_knee = (kp[left_knee][0], kp[left_knee][1])
+    coord_ankle = (kp[left_ankle][0], kp[left_ankle][1])
+    distance = 0        #we add the distance between keypoints 16 1 8 13 14
+    distance += math.dist(coord_eyes,coord_neck)
+    distance += math.dist(coord_neck, coord_hip)
+    distance += math.dist(coord_hip, coord_knee)
+    distance += math.dist(coord_knee, coord_ankle)
+
+    pixels = int(distance/athlete_height*100)
+    return pixels
+
+def draw_meter_lines(frame, kp):
+    values = []
+    ppm = get_pixels_per_meter(kp)
+    for keypoint in kp:      #we get just the y values
+        values.append(keypoint[1])
+    max_value = int(max(values))    #we draw the line at the lowest keypoint (approx the floor)
+    frame = cv2.line(frame, (0, max_value), (1280, max_value), (255, 255, 255), 2)
+    for meter in range(int(1280/ppm)+1):
+        frame = cv2.line(frame, (0+(ppm*meter), max_value), (0+(ppm*meter), max_value+10), (255, 255, 255), 3)
+        frame = cv2.putText(frame, str(meter), (-10+(ppm*meter), 44 + max_value),cv2.FONT_HERSHEY_SIMPLEX,       # font
+                    1,      #font scale
+                    (255, 255, 255),   #   font color
+                    2)
+    return frame
+
+def draw_keypoints(frame, kp):  #kp must be in 25*3 format
+    kpid = 0
+    for point in kp:  # drawing a circle for each kp
+        center = (int(point[0]), int(point[1]))
+        center_high = ((int(point[0])-5, int(point[1])-15))      #used for writing its id
+        frame = cv2.circle(frame, center, 10, (0, int(255 * point[2]), 255 * (1 - point[2])), 3)       #draws green cirle if certain, red if not
+        cv2.putText(frame,
+                    str(kpid),
+                    center_high,
+                    cv2.FONT_HERSHEY_SIMPLEX,  # font
+                    0.5,  # font scale
+                    (255, 255, 255),  # font color
+                    1)  # line type
+        kpid += 1
+    return frame
+
+#main
+while(1):
+    cap = cv2.VideoCapture('makau.mp4')
+    total_frame_count = 0
+
+    while(cap.isOpened()):
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        kp = keypoints[total_frame_count]
+
+        frame = draw_keypoints(frame, kp)
+
+        hip_coord = (kp[hip][0], kp[hip][1])
+        left_ankle_coord = (kp[left_ankle][0], kp[left_ankle][1])
+        right_ankle_coord = (kp[right_ankle][0], kp[right_ankle][1])
+        ankle_distance = math.fabs(left_ankle_coord[0]-right_ankle_coord[0])
+        if ankle_distance > prev_ankle_distance-5:
+            stride_frames +=1
+            prev_ankle_distance = ankle_distance
         else:
-            # Change these variables to point to the correct folder (Release/x64 etc.)
-            sys.path.append('/usr/local/python');
-            # If you run `make install` (default path is `/usr/local/python` for Ubuntu), you can also access the OpenPose/python module from there. This will install OpenPose and the python library at your desired installation path. Ensure that this is in your python path in order to use it.
-            # sys.path.append('/usr/local/python')
-            from openpose import pyopenpose as op
-    except ImportError as e:
-        print('Error: OpenPose library could not be found. Did you enable `BUILD_PYTHON` in CMake and have this Python script in the right folder?')
-        raise e
-
-    # Flags
-    path_to_video='runner.mp4'
-    parser = argparse.ArgumentParser()
-    #parser.add_argument('--input', type=str, default='video')
-    #parser.add_argument('--video', type=str, default=path_to_video)
-    args = parser.parse_known_args()
-
-    # Custom Params (refer to include/openpose/flags.hpp for more parameters)
-    params = dict()
-    params["model_folder"] = "models/"
-
-    # Add others in path?
-    for i in range(0, len(args[1])):
-        curr_item = args[1][i]
-        if i != len(args[1])-1: next_item = args[1][i+1]
-        else: next_item = "1"
-        if "--" in curr_item and "--" in next_item:
-            key = curr_item.replace('-','')
-            if key not in params:  params[key] = "1"
-        elif "--" in curr_item and "--" not in next_item:
-            key = curr_item.replace('-','')
-            if key not in params: params[key] = next_item
-
-    # Construct it from system arguments
-    # op.init_argv(args[1])
-    # oppython = op.OpenposePython()
-
-    # Starting OpenPose
-    opWrapper = op.WrapperPython(op.ThreadManagerMode.Synchronous)
-    opWrapper.configure(params)
-    opWrapper.execute()
-
-    poses=[]
-    keypoints=[]
-    # Get all json filenames from dir
-    path_to_json = '1/'
-    json_files = [pos_json for pos_json in os.listdir(path_to_json) if pos_json.endswith('.json')]
-    
-    for json_filename in json_files: #Iterate with all json filenames
-        path=os.path.join(path_to_json, json_filename) #Create path to json file
-        with open(path) as jsonFile: #Open json file
-            jsonObject = json.load(jsonFile) #Create json object
-            poses.append(jsonObject) #Append json object in poses
-            jsonFile.close()
-
-    shutil.rmtree(path_to_json) #Remove json folder
-
-    #Extract keypoints
-    for pose in poses:
-        keypoints.append(pose.get('people')[0].get('pose_keypoints_2d')) #Extract keypoints from skeleton and save it in keypoints array. Only works if number_people_max=1
-    # Body part locations (x, y) and detection confidence (c) formatted as x0,y0,c0,x1,y1,c1,.... 
-
-    print(keypoints[0])
-    print(len(keypoints[0]))
+            stride_pixels = ankle_distance
+            stride_meters = stride_pixels/get_pixels_per_meter(kp)
+            stride_time = stride_frames*(1/camera_fps)
+            try:
+                speed = (stride_meters/stride_time)*3.6
+            except ZeroDivisionError:
+                print ("Division by zero")
+            stride_frames=0
+            prev_ankle_distance = ankle_distance
+            print("The stride has " + str(stride_meters) + " meters")
+            print("The stride spent " + str(stride_time) + " seconds")
+            print("The speed is " + str(speed) + " kilometers per hour")
 
 
-    
-    # plt.plot(velocities)
-    # plt.ylabel('speed')
-    # plt.show()
+        cv2.putText(frame,
+                    str(round(speed,2))+' Km/h',
+                    bottom_left_of_screen,
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    2,
+                    (255,255,255),
+                    2)
 
-    
-except Exception as e:
-    print(e)
-    sys.exit(-1)
+
+        cv2.imshow('frame', frame)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            exit()
+        total_frame_count += 1
+
+cap.release()
+cv2.destroyAllWindows()
+
