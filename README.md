@@ -146,14 +146,15 @@ After installing OpenPose library, clone this repository:
 ```
 git clone https://github.com/DaniGarciaLopez/running-speed-estimator/
 ```
-Copy models folder:
 ```
-cp -r openpose/models running-speed-estimator/models
-```
-Run the main script with Python 3:
+Generate keypoints using openpose:
 ```
 cd running-speed-estimator
-python3 main.py --tracking --number_people_max 1 --write_json --video makau.mp4
+python3 generate_keypoints.py --tracking --number_people_max 1 --write_json --video makau.mp4
+```
+Run the estimator:
+```
+python3 main.py
 ```
 ## References
 - [OpenPose Installation](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/README.md)
