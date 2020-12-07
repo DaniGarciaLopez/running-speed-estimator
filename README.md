@@ -146,7 +146,6 @@ After installing OpenPose library, clone this repository:
 ```
 git clone https://github.com/DaniGarciaLopez/running-speed-estimator/
 ```
-```
 Generate keypoints using openpose:
 ```
 cd running-speed-estimator
