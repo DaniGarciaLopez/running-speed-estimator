@@ -86,7 +86,7 @@ try:
     # Body part locations (x, y) and detection confidence (c) formatted as x0,y0,c0,x1,y1,c1,.... 
 
 
-    print("Json files generate in folder: ", path_to_json)
+    print("Json files generated in folder: ", path_to_json)
     
 except Exception as e:
     print(e)
