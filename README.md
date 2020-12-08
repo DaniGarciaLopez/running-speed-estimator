@@ -1,5 +1,28 @@
 # Estimate the running speed of a human from a video
-## Installation
+## Prerrequisites
+> Tested using python 3.9
+In order to run the estimator you have to install the following dependencies:
+```
+pip3 install numpy==1.19.3
+pip3 install scipy
+pip install opencv-python==4.4.0.46
+```
+## How to start
+Clone this repository:
+```
+git clone https://github.com/DaniGarciaLopez/running-speed-estimator/
+```
+Run the estimator:
+```
+python3 main.py
+```
+> You can modify test videos changing path_to json= 'runner/' in import_json.py and cap=cv2.VidoCapture('runner.mp4') in main.py
+If you want to run the estimator using your own videos you have to install OpenPose and run:
+```
+cd running-speed-estimator
+python3 generate_keypoints.py --tracking --number_people_max 1 --write_json --video makau.mp4
+```
+## Installing OpenPose
 > The following steps were perform to sucessfully install OpenPose 1.7 in a fresh Ubuntu 18.04 system. In order to install it in a different environment you may need another configuration. Please refer to the [official installation instructions](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/README.md) to proceed.
 ### Prerequisites
 #### Install Cuda 10.0 and CuDNN 7
@@ -140,21 +163,6 @@ cd openpose/build/examples/tutorial_api_python
 python3 openpose_python.py
 ```
 ![image](https://github.com/tramper2/openpose/blob/master/doc/media/shake.gif)
-
-# How to start
-After installing OpenPose library, clone this repository:
-```
-git clone https://github.com/DaniGarciaLopez/running-speed-estimator/
-```
-Generate keypoints using openpose:
-```
-cd running-speed-estimator
-python3 generate_keypoints.py --tracking --number_people_max 1 --write_json --video makau.mp4
-```
-Run the estimator:
-```
-python3 main.py
-```
 ## References
 - [OpenPose Installation](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/README.md)
 - [A 2020 Guide for Installing OpenPose](https://medium.com/@erica.z.zheng/installing-openpose-on-ubuntu-18-04-cuda-10-ebb371cf3442)
