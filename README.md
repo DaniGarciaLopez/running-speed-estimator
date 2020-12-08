@@ -18,6 +18,7 @@ git clone https://github.com/DaniGarciaLopez/running-speed-estimator/
 ```
 Run the estimator:
 ```
+cd running-speed-estimator
 python3 main.py
 ```
 > You can modify test videos changing path_to json= 'runner/' in import_json.py and cap=cv2.VidoCapture('runner.mp4') in main.py.
@@ -25,7 +26,6 @@ python3 main.py
 
 If you want to use the estimator using your own videos you must have OpenPose installed to run:
 ```
-cd running-speed-estimator
 python3 generate_keypoints.py --tracking --number_people_max 1 --write_json --video makau.mp4
 ```
 ## Installing OpenPose
