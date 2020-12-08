@@ -1,9 +1,9 @@
 # Estimate the running speed of a human from a video
 This repository estimates the running speed of a human from a video using OpenPose to detect skeleton joints.
 
-Due to the complexity of installing OpenPose from source, we provide three video examples to run the estimator without OpenPose. If you want to use it with your own data check the instructions below. Currently the estimator only works in a video with a lonely runner, this may be upgraded in a future when OpenPose will allow multiple people tracking.
-
 ![image](https://github.com/DaniGarciaLopez/running-speed-estimator/blob/main/runner.gif)
+
+Due to the complexity of installing OpenPose from source, we provide three video examples to run the estimator without OpenPose. If you want to use it with your own data check the instructions below. Currently the estimator only works in a video with a lonely runner, this may be upgraded in a future when OpenPose will allow multiple people tracking.
 
 ## Requirements
 > Tested using python 3.9
