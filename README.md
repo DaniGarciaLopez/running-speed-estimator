@@ -5,7 +5,7 @@ In order to run the estimator you have to install the following dependencies:
 ```
 pip3 install numpy==1.19.3
 pip3 install scipy
-pip install opencv-python==4.4.0.46
+pip3 install opencv-python==4.4.0.46
 ```
 ## How to start
 Clone this repository:
