@@ -22,7 +22,7 @@ python3 main.py
 > You can modify test videos changing path_to json= 'runner/' in import_json.py and cap=cv2.VidoCapture('runner.mp4') in main.py.
 > You also need to modify athlete_height in main.py and camera_fps in case of a slow motion video
 
-If you want to run the estimator using your own videos you have to install OpenPose and run:
+If you want to use the estimator using your own videos you must have OpenPose installed to run:
 ```
 cd running-speed-estimator
 python3 generate_keypoints.py --tracking --number_people_max 1 --write_json --video makau.mp4
