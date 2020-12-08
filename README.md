@@ -1,5 +1,8 @@
 # Estimate the running speed of a human from a video
-## Prerrequisites
+This repository estimates the running speed of a human from a video using OpenPose to detect skeleton joints and its height.
+
+Due to the complexity of installing OpenPose from source, we provide three video examples to run the estimator without OpenPose. If you want to use it with your own data check the instructions below. Currently the estimator only works in a video with a lonely runner, this may be upgraded in a future when OpenPose will allow multiple people tracking.
+## Prerequisites
 > Tested using python 3.9
 In order to run the estimator you have to install the following dependencies:
 ```
@@ -17,6 +20,7 @@ Run the estimator:
 python3 main.py
 ```
 > You can modify test videos changing path_to json= 'runner/' in import_json.py and cap=cv2.VidoCapture('runner.mp4') in main.py
+> You also need to modify athlete_height in main.py and camera_fps in case of a slow motion video
 If you want to run the estimator using your own videos you have to install OpenPose and run:
 ```
 cd running-speed-estimator
