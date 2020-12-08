@@ -5,16 +5,18 @@ import data_manipulation as dm
 import numpy as np
 import math
 from matplotlib import pyplot as plt
+import scipy
 
 #key data
 athlete_height = 170 # in cm
-camera_fps = 30
+camera_fps = 600
 
 #importing json file data
 kp = ij.get_keypoints()     #kp is a list of all the 25x3 lists of keypoints
 kp = dm.smooth_data(kp)
 #kp = ij.interpolate_uncertain_points(kp)       #uncomment to interpolate uncertain points
 f_kp = []       #f_kp will be a 25x3 list of the keypoints at a specific frame
+speeds=[]
 
 #init
 speed = 0
@@ -108,7 +110,7 @@ def draw_athlete_speed(frame, speed):
 
 
 #main
-cap = cv2.VideoCapture('runner.mp4')
+cap = cv2.VideoCapture('makau.mp4')
 frame_count = 0
 
 while(cap.isOpened()):
@@ -138,18 +140,37 @@ while(cap.isOpened()):
         try:
             speed = (stride_meters / stride_time) * 3.6
         except ZeroDivisionError:
-            print("ZeroDivisionError")
+            pass
         if speed < 50:
             new_speed=speed - ((speed-new_speed)/4)
         stride_frames=0
 
+    speeds.append(new_speed)
+
     frame = draw_athlete_speed(frame, new_speed)
 
-    cv2.imshow('frame', frame)
+    cv2.imshow('Running Speed Estimator', frame)
     frame_count += 1
 
     if cv2.waitKey(20) & 0xFF == ord('q'):
         break
+
+#Create speed plot
+frames=len(kp)
+smoothness=int(frames/2) #Change smoothness depending on the video duration
+
+window_length=int(frames/5)
+window_length=int(np.ceil(window_length) // 2 * 2 + 1) #Make it an odd number
+y=scipy.signal.savgol_filter(speeds, window_length, 2)
+x=list(range(1,len(speeds)+1))
+
+x_smooth = np.linspace(min(x),max(x),smoothness)
+y_smooth = scipy.interpolate.make_interp_spline(x,y)(x_smooth)
+plt.ylabel('Velocity [km/h]')
+plt.xlabel('Time [fps]')
+plt.title('Running Speed Plot')
+plt.plot(x_smooth,y_smooth)
+plt.show()
 
 cap.release()
 cv2.destroyAllWindows()
