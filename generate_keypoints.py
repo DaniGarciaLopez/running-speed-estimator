@@ -12,23 +12,6 @@ import pandas as pd
 import shutil
 import matplotlib.pyplot as plt
 
-def height_to_stride(height,gender):
-    height=height-100
-
-    if height<=0 or height>150:
-        raise NameError('InvalidHeight')
-    
-    if gender=="M": #Male   
-        return height*0.415
-
-    elif gender=="F": #Female
-        return height*0.413
-
-    else:
-        raise NameError('InvalidGender')
-
-print(height_to_stride(180, "M"))
-
 try:
     # Import Openpose (Windows/Ubuntu/OSX)
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -103,14 +86,7 @@ try:
     # Body part locations (x, y) and detection confidence (c) formatted as x0,y0,c0,x1,y1,c1,.... 
 
 
-    print(keypoints[0])
-    print(len(keypoints[0]))
-
-    
-    # plt.plot(velocities)
-    # plt.ylabel('speed')
-    # plt.show()
-
+    print("Json files generate in folder: ", path_to_json)
     
 except Exception as e:
     print(e)
