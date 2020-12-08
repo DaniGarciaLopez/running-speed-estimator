@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 
 #key data
 athlete_height = 170 # in cm
-camera_fps = 600
+camera_fps = 30
 
 #importing json file data
 kp = ij.get_keypoints()     #kp is a list of all the 25x3 lists of keypoints
@@ -18,6 +18,7 @@ f_kp = []       #f_kp will be a 25x3 list of the keypoints at a specific frame
 
 #init
 speed = 0
+new_speed = 0
 prev_ang = 0
 stride_frames = 0
 prev_ankle_distance = 0
@@ -57,7 +58,7 @@ def get_pixels_per_meter(f_kp):   #returns how many pixels correlate to 1 meter 
 
 def get_stride_distance(height, is_running):
     if is_running:
-        return height*0.0125
+        return height*0.011
     else:
         return height*0.00413
 
@@ -83,7 +84,7 @@ def draw_keypoints(frame, f_kp):
     for point in f_kp:  # drawing a circle for each kp
         center = (int(point[0]), int(point[1]))
         center_high = ((int(point[0])-5, int(point[1])-15))      #used for writing its id
-        frame = cv2.circle(frame, center, 10, (0, int(255 * point[2]), 255 * (1 - point[2])), 3)       #draws green cirle if certain, red if not
+        frame = cv2.circle(frame, center, 10, (0, 255, 9), 3)       #draws green cirle if certain, red if not
         cv2.putText(frame,
                     str(kpid),
                     center_high,
@@ -101,13 +102,13 @@ def draw_athlete_speed(frame, speed):
                 bottom_left_of_screen,
                 cv2.FONT_HERSHEY_SIMPLEX,
                 2,
-                (255, 255, 255),
+                (0, 0, 0),
                 2)
     return frame
 
 
 #main
-cap = cv2.VideoCapture('makau.mp4')
+cap = cv2.VideoCapture('runner.mp4')
 frame_count = 0
 
 while(cap.isOpened()):
@@ -122,9 +123,9 @@ while(cap.isOpened()):
     #here is the algorithm that detects velocity
 
     hip_coord = (f_kp[hip][0], f_kp[hip][1])
-    left_ankle_coord = (f_kp[left_ankle][0], f_kp[left_ankle][1])
-    right_ankle_coord = (f_kp[right_ankle][0], f_kp[right_ankle][1])
-    ang = direction*get_angle(left_ankle_coord, hip_coord, right_ankle_coord)
+    left_knee_coord = (f_kp[left_knee][0], f_kp[left_knee][1])
+    right_knee_coord = (f_kp[right_knee][0], f_kp[right_knee][1])
+    ang = direction*get_angle(left_knee_coord, hip_coord, right_knee_coord)
 
     if ang > prev_ang:
         stride_frames +=1
@@ -133,16 +134,21 @@ while(cap.isOpened()):
         direction*=-1
         prev_ang = -ang
         stride_meters = get_stride_distance(athlete_height,True)
-        stride_time = stride_frames*(1/camera_fps)
-        speed = (stride_meters/stride_time)*3.6
+        stride_time = stride_frames * (1 / camera_fps)
+        try:
+            speed = (stride_meters / stride_time) * 3.6
+        except ZeroDivisionError:
+            print("ZeroDivisionError")
+        if speed < 50:
+            new_speed=speed - ((speed-new_speed)/4)
         stride_frames=0
 
-    frame = draw_athlete_speed(frame, speed)
+    frame = draw_athlete_speed(frame, new_speed)
 
     cv2.imshow('frame', frame)
     frame_count += 1
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(20) & 0xFF == ord('q'):
         break
 
 cap.release()

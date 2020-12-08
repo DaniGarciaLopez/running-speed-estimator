@@ -9,8 +9,8 @@ def get_keypoints():
     keypoints=[]
 
     # Get all json filenames from dir
-    path_to_json = 'makau/'
-    json_files = [pos_son for pos_json in os.listdir(path_to_json) if pos_json.endswith('.json')]
+    path_to_json = 'runner/'
+    json_files = [pos_json for pos_json in os.listdir(path_to_json) if pos_json.endswith('.json')]
 
     for json_filename in json_files: #Iterate with all json filenames
         path=os.path.join(path_to_json, json_filename) #Create path to json file
