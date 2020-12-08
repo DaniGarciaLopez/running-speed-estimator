@@ -29,7 +29,7 @@ If you want to use the estimator using your own videos you must have OpenPose in
 python3 generate_keypoints.py --tracking --number_people_max 1 --write_json --video makau.mp4
 ```
 ## Installing OpenPose
-> The following steps were perform to sucessfully install OpenPose 1.7 in a fresh Ubuntu 18.04 system. In order to install it in a different environment you may need another configuration. Please refer to the [official installation instructions](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/README.md) to proceed.
+> The following steps were perform to sucessfully install OpenPose 1.7 in a fresh Ubuntu 18.04 system using CUDA. In order to install it in a different environment you may need another configuration. Please refer to the [official installation instructions](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/README.md) to proceed.
 ### Prerequisites
 #### Install Cuda 10.0 and CuDNN 7
 Purge existing CUDA first:
@@ -119,7 +119,7 @@ sudo apt install caffe-cuda
 sudo apt-get install libopencv-dev
 $ pkg-config --modversion opencv   ## current latest version is 3.2
 ```
-Run the following command if and only if there is "cv2" not found error when running python example:
+Install OpenCV for Python 3:
 ```
 pip3 install opencv-python==3.2.0.8
 
