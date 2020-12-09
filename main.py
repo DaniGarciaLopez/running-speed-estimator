@@ -5,6 +5,7 @@ import data_manipulation as dm
 import numpy as np
 import math
 from matplotlib import pyplot as plt
+from pylive import live_plotter
 import scipy
 
 #key data
@@ -51,7 +52,7 @@ def get_pixels_per_meter(f_kp):   #returns how many pixels correlate to 1 meter 
     coord_knee = (f_kp[left_knee][0], f_kp[left_knee][1])
     coord_ankle = (f_kp[left_ankle][0], f_kp[left_ankle][1])
     distance = 0        #we add the distances between eyes, neck, hip, knee and ankle
-    distance += math.dist(coord_eyes,coord_neck)
+    distance += math.dist(coord_eyes, coord_neck)
     distance += math.dist(coord_neck, coord_hip)
     distance += math.dist(coord_hip, coord_knee)
     distance += math.dist(coord_knee, coord_ankle)
@@ -114,6 +115,12 @@ def draw_athlete_speed(frame, speed):
 cap = cv2.VideoCapture('runner.mp4')
 frame_count = 0
 
+#Live plotter
+size=100
+x_vec=np.linspace(0,100,size)
+y_vec=[0]*len(x_vec)
+line1=[]
+
 while(cap.isOpened()):
     ret, frame = cap.read()
     if not ret:
@@ -150,7 +157,11 @@ while(cap.isOpened()):
         stride_frames=0
         times=0
 
+    #Live plotter
     speeds.append(new_speed)
+    y_vec[-1]=speeds[-1]
+    #line1 = live_plotter(x_vec, y_vec, line1) #Uncomment this line to show live plotter
+    y_vec = np.append(y_vec[1:],new_speed)
 
     frame = draw_athlete_speed(frame, new_speed)
 
