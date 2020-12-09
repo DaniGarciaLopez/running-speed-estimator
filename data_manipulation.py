@@ -21,7 +21,7 @@ x_values = []
 y_values = []
 
 #imports a series of keypoints and outputs smoothed data
-def smooth_data(kp):
+def smooth_data(kp, fps):
     kp_filtered = kp
     for kp_id in range(25):
         x_values.clear()
@@ -29,9 +29,15 @@ def smooth_data(kp):
         for f_kp in kp:
             x_values.append(f_kp[kp_id][0])
             y_values.append(f_kp[kp_id][1])
-        x_values_filtered = scipy.signal.savgol_filter(x_values, 15, 2)
-        y_values_filtered = scipy.signal.savgol_filter(y_values, 15, 2)
+        x_values_filtered = scipy.signal.savgol_filter(x_values,get_odd_half(fps), 2)
+        y_values_filtered = scipy.signal.savgol_filter(y_values,get_odd_half(fps), 2)
         for i in range(len(kp)):
             kp_filtered[i][kp_id][0]=x_values_filtered[i]
             kp_filtered[i][kp_id][1]=y_values_filtered[i]
     return kp_filtered
+
+def get_odd_half(fps):
+    if (fps/2)%2 == 0:
+        return int(fps/2) + 1
+    else:
+        return int(fps/2)

@@ -9,17 +9,18 @@ import scipy
 
 #key data
 athlete_height = 170 # in cm
-camera_fps = 600
+camera_fps = 30
 
 #importing json file data
 kp = ij.get_keypoints()     #kp is a list of all the 25x3 lists of keypoints
-kp = dm.smooth_data(kp)
+kp = dm.smooth_data(kp, camera_fps)
 #kp = ij.interpolate_uncertain_points(kp)       #uncomment to interpolate uncertain points
 f_kp = []       #f_kp will be a 25x3 list of the keypoints at a specific frame
 speeds=[]
 
 #init
 speed = 0
+times = 0
 new_speed = 0
 prev_ang = 0
 stride_frames = 0
@@ -110,7 +111,7 @@ def draw_athlete_speed(frame, speed):
 
 
 #main
-cap = cv2.VideoCapture('makau.mp4')
+cap = cv2.VideoCapture('runner.mp4')
 frame_count = 0
 
 while(cap.isOpened()):
@@ -129,9 +130,12 @@ while(cap.isOpened()):
     right_knee_coord = (f_kp[right_knee][0], f_kp[right_knee][1])
     ang = direction*get_angle(left_knee_coord, hip_coord, right_knee_coord)
 
-    if ang > prev_ang:
+    if ang > (prev_ang):
         stride_frames +=1
         prev_ang = ang
+    elif times == 0 or times == 1:
+        stride_frames +=1
+        times+=1
     else:
         direction*=-1
         prev_ang = -ang
@@ -144,6 +148,7 @@ while(cap.isOpened()):
         if speed < 50:
             new_speed=speed - ((speed-new_speed)/4)
         stride_frames=0
+        times=0
 
     speeds.append(new_speed)
 
@@ -174,4 +179,3 @@ plt.show()
 
 cap.release()
 cv2.destroyAllWindows()
-
